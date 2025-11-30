@@ -467,7 +467,7 @@ const UNO: React.FC = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-800 p-4">
+    <div className="min-h-screen bg-linear-to-br from-purple-600 to-indigo-800 p-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-5xl font-bold text-center mb-2 text-white">UNO - 4 Joueurs</h1>
         <p className="text-center text-purple-200 mb-4">{gameState.message}</p>
