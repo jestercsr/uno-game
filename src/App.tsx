@@ -27,7 +27,7 @@ type GameState = {
   winner: number | null;
   message: string;
   selectedColor: Color;
-  selectedCards: number[]; // indices in player's hand
+  selectedCards: number[];
   skipNextPlayer: boolean;
 };
 
@@ -118,7 +118,6 @@ const drawCardsFromDeck = (count: number, currentDeck: Card[], currentDiscard: C
   for (let i = 0; i < count; i++) {
     if (newDeck.length === 0) {
       if (currentDiscard.length > 1) {
-        // shuffle discard except top
         newDeck = currentDiscard.slice(0, -1).sort(() => Math.random() - 0.5);
       } else {
         break;
@@ -140,10 +139,9 @@ const getNextPlayerIdx = (currentIdx: number, dir: 1 | -1): number => {
   return clockwiseOrder[nextPosition];
 };
 
-// Small presentational component for wild card visuals
 const CardWildDisplay: React.FC<{ cardValue: string | number| ReactNode; isSmall?: boolean }> = ({ cardValue, isSmall = false }) => (
   <div className="relative w-full h-full flex items-center justify-center">
-    <div className={`relative ${isSmall ? 'w-10 h-10' : 'w-14 h-14'} rounded-full bg-white flex items-center justify-center overflow-hidden`}>
+    <div className={`relative ${isSmall ? 'w-8 h-8' : 'w-12 h-12'} rounded-full bg-white flex items-center justify-center overflow-hidden`}>
       <div className="absolute w-full h-0.5 bg-black z-10" />
       <div className="absolute h-full w-0.5 bg-black z-10" />
       <div className="grid grid-cols-2 gap-0 w-full h-full">
@@ -154,7 +152,7 @@ const CardWildDisplay: React.FC<{ cardValue: string | number| ReactNode; isSmall
       </div>
     </div>
     {String(cardValue).includes('+4') && (
-      <span className="absolute text-white font-bold z-50" style={{ fontSize: isSmall ? '12px' : '16px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+      <span className="absolute text-white font-bold z-50" style={{ fontSize: isSmall ? '10px' : '14px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
         +4
       </span>
     )}
@@ -171,8 +169,8 @@ const CardDisplay: React.FC<{ card: Card; isSmall?: boolean }> = ({ card, isSmal
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      <div className={`relative ${isSmall ? 'w-10 h-10' : 'w-14 h-14'} rounded-full bg-white flex items-center justify-center`}>
-        <span className="font-bold" style={{ fontSize: isSmall ? '16px' : '24px', color: bgColor }}>
+      <div className={`relative ${isSmall ? 'w-8 h-8' : 'w-12 h-12'} rounded-full bg-white flex items-center justify-center`}>
+        <span className="font-bold" style={{ fontSize: isSmall ? '14px' : '20px', color: bgColor }}>
           {display}
         </span>
       </div>
@@ -252,7 +250,6 @@ const UNO: React.FC = () => {
     }
 
     if (selectedCardObjects[0].type === 'wild' && gameState.selectedColor === null) {
-      // must choose color first
       return;
     }
 
@@ -335,7 +332,6 @@ const UNO: React.FC = () => {
     }));
   };
 
-  // AI turns
   useEffect(() => {
     if (gameState.currentPlayerIdx === 0 || gameState.gameOver) return;
 
@@ -467,11 +463,11 @@ const UNO: React.FC = () => {
     );
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-600 to-indigo-800 p-4">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-5xl font-bold text-center mb-2 text-white">UNO - 4 Joueurs</h1>
-        <p className="text-center text-purple-200 mb-4">{gameState.message}</p>
-        <p className="text-center text-white mb-6">
+    <div className="min-h-screen bg-linear-to-br from-purple-600 to-indigo-800 p-2 md:p-4 flex items-center justify-center">
+      <div className="w-full max-w-2xl md:max-w-6xl">
+        <h1 className="text-3xl md:text-5xl font-bold text-center mb-1 md:mb-2 text-white">UNO</h1>
+        <p className="text-center text-purple-200 text-xs md:text-sm mb-2 md:mb-4 h-6">{gameState.message}</p>
+        <p className="text-center text-white text-xs md:text-sm mb-3 md:mb-6">
           Joueur actuel:{' '}
           <span style={{ color: PLAYER_COLORS[gameState.currentPlayerIdx], fontWeight: 'bold' }}>
             {PLAYERS[gameState.currentPlayerIdx]}
@@ -480,43 +476,43 @@ const UNO: React.FC = () => {
         </p>
 
         {/* Game area */}
-        <div className="bg-green-700 rounded-2xl p-8 mb-6">
+        <div className="bg-green-700 rounded-xl md:rounded-2xl p-3 md:p-8 mb-4 md:mb-6">
           {/* Top player (IA 2) */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center gap-1 flex-wrap mb-2">
+          <div className="text-center mb-3 md:mb-8">
+            <div className="flex justify-center gap-0.5 md:gap-1 flex-wrap mb-1 md:mb-2">
               {gameState.hands[1].map((_, idx) => (
-                <div key={idx} className="w-10 h-14 bg-purple-800 rounded border border-purple-600" />
+                <div key={idx} className="w-6 h-8 md:w-10 md:h-14 bg-purple-800 rounded border border-purple-600" />
               ))}
             </div>
-            <p className={`font-bold ${gameState.currentPlayerIdx === 1 ? 'text-white text-lg' : 'text-gray-300'}`}>
+            <p className={`text-xs md:text-base font-bold ${gameState.currentPlayerIdx === 1 ? 'text-white' : 'text-gray-300'}`}>
               {PLAYERS[1]} ({gameState.hands[1].length})
             </p>
           </div>
 
           {/* Left and Right players */}
-          <div className="flex justify-between mb-8">
+          <div className="flex justify-between mb-3 md:mb-8 gap-2">
             {/* Left player (IA 3) */}
             <div>
-              <div className="flex flex-col gap-1 mb-2">
+              <div className="flex flex-col gap-0.5 md:gap-1 mb-1 md:mb-2">
                 {gameState.hands[3].map((_, idx) => (
-                  <div key={idx} className="w-10 h-14 bg-purple-800 rounded border border-purple-600" />
+                  <div key={idx} className="w-6 h-8 md:w-10 md:h-14 bg-purple-800 rounded border border-purple-600" />
                 ))}
               </div>
-              <p className={`font-bold ${gameState.currentPlayerIdx === 3 ? 'text-white text-lg' : 'text-gray-300'}`}>
+              <p className={`text-xs md:text-base font-bold ${gameState.currentPlayerIdx === 3 ? 'text-white' : 'text-gray-300'}`}>
                 {PLAYERS[3]} ({gameState.hands[3].length})
               </p>
             </div>
 
             {/* Center - Discard pile and deck */}
-            <div className="flex justify-center gap-8">
-              <div className="relative w-20 h-28">
+            <div className="flex justify-center gap-2 md:gap-8 shrink-0">
+              <div className="relative w-12 h-16 md:w-20 md:h-28">
                 {gameState.discard.slice(-3).map((card, idx) => (
                   <div
                     key={idx}
-                    className="absolute rounded-lg w-20 h-28 font-bold flex items-center justify-center text-sm"
+                    className="absolute rounded-lg w-12 h-16 md:w-20 md:h-28 font-bold flex items-center justify-center"
                     style={{
                       backgroundColor: getCardColor(card),
-                      transform: `translateY(${idx * 4}px) rotate(${idx * 5}deg)`,
+                      transform: `translateY(${idx * 2}px) md:translateY(${idx * 4}px) rotate(${idx * 5}deg)`,
                     }}
                   >
                     <CardDisplay card={card} isSmall={true} />
@@ -527,7 +523,7 @@ const UNO: React.FC = () => {
               <button
                 onClick={handlePlayerDraw}
                 disabled={gameState.currentPlayerIdx !== 0 || gameState.gameOver}
-                className="w-20 h-28 bg-blue-600 hover:bg-blue-700 rounded-lg border-4 border-blue-400 flex items-center justify-center text-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="w-12 h-16 md:w-20 md:h-28 bg-blue-600 hover:bg-blue-700 rounded-lg border-2 md:border-4 border-blue-400 flex items-center justify-center text-xl md:text-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 {gameState.deck.length}
               </button>
@@ -553,7 +549,7 @@ const UNO: React.FC = () => {
                               selectedColor: color,
                             }));
                           }}
-                          className={`w-12 h-12 rounded-full border-2 transition transform hover:scale-110 ${
+                          className={`w-8 h-8 md:w-12 md:h-12 rounded-full border-2 transition transform hover:scale-110 ${
                             gameState.selectedColor === color ? 'border-white scale-110' : 'border-gray-300'
                           }`}
                           style={{ backgroundColor: colorCodes[color] }}
@@ -566,31 +562,31 @@ const UNO: React.FC = () => {
 
             {/* Right player (IA 4) */}
             <div>
-              <div className="flex flex-col gap-1 mb-2">
+              <div className="flex flex-col gap-0.5 md:gap-1 mb-1 md:mb-2">
                 {gameState.hands[2].map((_, idx) => (
-                  <div key={idx} className="w-10 h-14 bg-purple-800 rounded border border-purple-600" />
+                  <div key={idx} className="w-6 h-8 md:w-10 md:h-14 bg-purple-800 rounded border border-purple-600" />
                 ))}
               </div>
-              <p className={`font-bold ${gameState.currentPlayerIdx === 2 ? 'text-white text-lg' : 'text-gray-300'}`}>
+              <p className={`text-xs md:text-base font-bold ${gameState.currentPlayerIdx === 2 ? 'text-white' : 'text-gray-300'}`}>
                 {PLAYERS[2]} ({gameState.hands[2].length})
               </p>
             </div>
           </div>
 
           {/* Bottom player (Player 1) */}
-          <div className="flex justify-center gap-2 flex-wrap mb-4">
+          <div className="flex justify-center gap-1 md:gap-2 flex-wrap mb-2 md:mb-4 max-h-28 md:max-h-full overflow-y-auto">
             {gameState.hands[0].map((card, idx) => (
               <button
                 key={card.id}
                 onClick={() => toggleCardSelection(idx)}
-                className={`rounded-lg font-bold transition transform text-sm w-16 h-24 cursor-pointer border-2 flex items-center justify-center ${
+                className={`rounded-lg font-bold transition transform text-xs md:text-sm w-12 h-16 md:w-16 md:h-24 cursor-pointer border-2 flex items-center justify-center shrink-0 ${
                   gameState.selectedCards.includes(idx)
-                    ? 'border-purple-300 scale-110 shadow-lg ring-4 ring-purple-400'
+                    ? 'border-purple-300 scale-110 shadow-lg ring-2 md:ring-4 ring-purple-400'
                     : 'border-transparent hover:scale-105 hover:shadow-lg'
                 }`}
                 style={{ backgroundColor: getCardColor(card) }}
               >
-                {card.type === 'wild' ? <CardWildDisplay cardValue={getCardDisplay(card)} /> : <span className="text-white text-2xl">{getCardDisplay(card)}</span>}
+                {card.type === 'wild' ? <CardWildDisplay cardValue={getCardDisplay(card)} /> : <span className="text-white text-lg md:text-2xl">{getCardDisplay(card)}</span>}
               </button>
             ))}
           </div>
@@ -599,7 +595,7 @@ const UNO: React.FC = () => {
 
           {/* Play button */}
           {gameState.selectedCards.length > 0 && gameState.currentPlayerIdx === 0 && (
-            <div className="flex justify-center gap-4 mt-6">
+            <div className="flex justify-center gap-2 md:gap-4 mt-3 md:mt-6 flex-wrap">
               <button
                 onClick={handlePlayerPlay}
                 disabled={
@@ -608,7 +604,7 @@ const UNO: React.FC = () => {
                     gameState.hands[0][gameState.selectedCards[0]].type === 'wild' &&
                     !gameState.selectedColor)
                 }
-                className={`px-6 py-2 rounded-lg font-bold transition ${
+                className={`px-3 md:px-6 py-1 md:py-2 rounded-lg font-bold text-xs md:text-base transition ${
                   canSubmitCards &&
                   !(
                     gameState.hands[0][gameState.selectedCards[0]] &&
@@ -621,7 +617,7 @@ const UNO: React.FC = () => {
               >
                 Jouer {gameState.selectedCards.length} carte{gameState.selectedCards.length > 1 ? 's' : ''}
               </button>
-              <button onClick={() => setGameState((prev) => ({ ...prev, selectedCards: [], selectedColor: null }))} className="px-6 py-2 rounded-lg font-bold bg-red-500 hover:bg-red-600 text-white transition">
+              <button onClick={() => setGameState((prev) => ({ ...prev, selectedCards: [], selectedColor: null }))} className="px-3 md:px-6 py-1 md:py-2 rounded-lg font-bold text-xs md:text-base bg-red-500 hover:bg-red-600 text-white transition">
                 Annuler
               </button>
             </div>
@@ -629,10 +625,10 @@ const UNO: React.FC = () => {
         </div>
 
         {/* Color active */}
-        <div className="text-center mb-6">
-          <p className="text-white font-bold">Couleur active:</p>
+        <div className="text-center mb-4 md:mb-6">
+          <p className="text-white font-bold text-xs md:text-base">Couleur active:</p>
           <div
-            className="w-8 h-8 rounded mx-auto mt-2"
+            className="w-6 h-6 md:w-8 md:h-8 rounded mx-auto mt-1 md:mt-2"
             style={{
               backgroundColor: {
                 red: '#ef4444',
@@ -646,9 +642,9 @@ const UNO: React.FC = () => {
 
         {/* Game over */}
         {gameState.gameOver && (
-          <div className="bg-white rounded-2xl p-8 text-center mb-6">
-            <h2 className="text-3xl font-bold mb-4">🎉 {PLAYERS[gameState.winner ?? 0]} a gagné !</h2>
-            <button onClick={resetGame} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg transition">
+          <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-8 text-center mb-4 md:mb-6">
+            <h2 className="text-xl md:text-3xl font-bold mb-3 md:mb-4">🎉 {PLAYERS[gameState.winner ?? 0]} a gagné !</h2>
+            <button onClick={resetGame} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 md:py-3 px-6 md:px-8 rounded-lg text-sm md:text-base transition">
               Nouvelle partie
             </button>
           </div>
@@ -656,8 +652,8 @@ const UNO: React.FC = () => {
 
         {!gameState.gameOver && (
           <div className="text-center">
-            <button onClick={resetGame} className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition inline-flex items-center gap-2">
-              <FaShuffle size={20} />
+            <button onClick={resetGame} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 md:py-3 px-6 md:px-8 rounded-lg text-sm md:text-base transition inline-flex items-center gap-2">
+              <FaShuffle size={16} className="md:w-5 md:h-5" />
               Nouvelle partie
             </button>
           </div>
